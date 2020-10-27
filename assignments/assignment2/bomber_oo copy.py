@@ -5,8 +5,8 @@ from random import *
 from time import time
 
 #some global constants
-CANVAS_WIDTH = 800
-CANVAS_HEIGHT = 600
+CANVAS_WIDTH = 1000
+CANVAS_HEIGHT = 700
 SPACING = 100
 
 speed = 0.0
@@ -71,23 +71,15 @@ class Building():
 
     ''' is_inside tests if a point is inside the building '''
     def is_inside(self, point):
-        if point.X < self.x or point.X > self.x + self.width or point.Y < CANVAS_HEIGHT-self.height :
+        if point.X < self.x or point.X > self.x + self.width or point.Y < CANVAS_HEIGHT-self.height:
             return False
         return True
 
     ''' shrink the building when a bomb drops on it '''
     def shrink(self):
-        if self.height <=50:
-            # stops the rectangle from extending downwards
-            self.canvas.delete(self.main_rect)
-            self.height = 0
-            
-            
-        else:
-            self.height = self.height - 50
-            self.canvas.delete(self.main_rect)
-            self.main_rect = self.canvas.create_rectangle(self.x, CANVAS_HEIGHT, self.x + self.width, CANVAS_HEIGHT-self.height, fill="brown")
-            
+        self.height = self.height - 50
+        self.canvas.delete(self.main_rect)
+        self.main_rect = self.canvas.create_rectangle(self.x, CANVAS_HEIGHT, self.x + self.width, CANVAS_HEIGHT-self.height, fill="brown")
 
     def cleanup(self):
         self.canvas.delete(self.main_rect)
@@ -124,10 +116,6 @@ class Bomb():
 
     ''' drop the bomb from the plane '''
     def drop(self, point):
-        # reset the falling boolean to false
-        # this occurs when the bomb has reached the bottom of canvas
-        if self.position.Y > CANVAS_HEIGHT:
-            self.falling = False
         if self.falling:
             # don't drop again while bomb is still falling
             return
@@ -204,7 +192,7 @@ class Display(Frame):
         self.rand = Random()
 
         #create game objects
-        self.plane = Plane(self.canvas, CANVAS_WIDTH, 0)
+        self.plane = Plane(self.canvas, CANVAS_WIDTH - 100, 0)
         self.bomb = Bomb(self.canvas)
         self.buildings = []
         self.building_width = SPACING * 0.8
@@ -235,11 +223,10 @@ class Display(Frame):
             building.cleanup()
 
         #create the new ones
-        for building_num in range(0, (CANVAS_WIDTH - 100)//SPACING):
+        for building_num in range(0, 1200//SPACING):
             height = self.rand.randint(10,500) #random number between 10 and 500
             self.buildings.append(Building(self.canvas, building_num, height,
                                            self.building_width))
-        print(self.buildings)
 
     def drop_bomb(self):
         self.bomb.drop(self.plane.position)
@@ -253,9 +240,6 @@ class Display(Frame):
             if building.is_inside(self.bomb.position):
                 self.bomb.explode()
                 building.shrink()
-                if building.height == 0:
-                    # removes the building from the list
-                    self.buildings.remove(building)
 
                 
 
@@ -274,7 +258,7 @@ class Display(Frame):
                 or building.is_inside(plane_body_bottom)
                 or building.is_inside(plane_wing)):
                 self.game_over()
-        if plane_body_bottom.getY() >= CANVAS_HEIGHT and plane_body_bottom.getX() < 20:
+        if plane_body_bottom.getY() == CANVAS_HEIGHT and plane_body_bottom.getX() < 20:
             self.plane_landed()
 
     ''' game_over is called when the plane crashes to stop play and display the 
@@ -299,9 +283,7 @@ class Display(Frame):
 
     ''' restart is called after game over to start a new game '''
     def restart(self):
-        if self.text:
-            self.canvas.delete(self.text)
-
+        self.canvas.delete(self.text)
         self.level = 1
         self.score = 0
         self.plane.reset_position()
