@@ -55,7 +55,7 @@ class Turtle(RiverObject):
         return False
 
     def is_sunk(self):
-        return self.sunk;
+        return self.sunk
     
         
         
@@ -393,25 +393,10 @@ class Model():
         (x, y) = self.frog.get_position()
         for i in range(0, 5):
             if abs((self.homes_x[i] % CANVAS_WIDTH) - x) <= GRID_SIZE/2 and not self.homes_occupied[i]: #edit
-                print(x)
-                print(self.homes_x[i])
-                print(self.homes_x[i] - x)
-                print(self.homes_occupied[i])
-                print(self.homes_x)
-                print(abs(self.homes_x[i] - x))
-                print(GRID_SIZE/2)
                 #we're in a free home
                 self.frog_is_home(i)
                 return
         self.died()
-        print(x)
-        print(self.homes_x[i])
-        print(self.homes_x[i] - x)
-        print(self.homes_occupied[i])
-        print(self.homes_x)
-        print(abs(self.homes_x[i] - x))
-        print(GRID_SIZE/2)
-
 
     def check_frog(self):
         if self.frog.moving:
