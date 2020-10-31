@@ -297,10 +297,11 @@ class Model():
     def died(self):
         self.lives = self.lives - 1
         self.controller.died()
+        self.controller.update_lives(self.lives) #edit
         if self.lives == 0:
             self.game_over()
         else:
-            self.pause_start(1, "self.new_life()")
+            self.pause_start(1, "self.frog.reset_position()") #edit
 
     def pause_start(self, pause_time, unpause_function):
         self.paused = True
@@ -346,6 +347,7 @@ class Model():
         self.create_cars()
         self.won = False
         self.paused = False
+        self.game_running = True
 
     def move_frog(self, dir):
         if self.game_running and not self.paused:
@@ -368,7 +370,7 @@ class Model():
             # check if it's now on any other log
             for log in self.logs:
                 if log.contains(self.frog):
-                    on_long = log
+                    on_log = log #edit
                     break
         if on_log is None:
             # frog is not on a log - it must be in the water
@@ -390,11 +392,26 @@ class Model():
         # frog is attempting to enter home
         (x, y) = self.frog.get_position()
         for i in range(0, 5):
-            if abs(self.homes_x[i] - x) < GRID_SIZE/2 and not self.homes_occupied[i]:
+            if abs((self.homes_x[i] % CANVAS_WIDTH) - x) <= GRID_SIZE/2 and not self.homes_occupied[i]: #edit
+                print(x)
+                print(self.homes_x[i])
+                print(self.homes_x[i] - x)
+                print(self.homes_occupied[i])
+                print(self.homes_x)
+                print(abs(self.homes_x[i] - x))
+                print(GRID_SIZE/2)
                 #we're in a free home
                 self.frog_is_home(i)
                 return
         self.died()
+        print(x)
+        print(self.homes_x[i])
+        print(self.homes_x[i] - x)
+        print(self.homes_occupied[i])
+        print(self.homes_x)
+        print(abs(self.homes_x[i] - x))
+        print(GRID_SIZE/2)
+
 
     def check_frog(self):
         if self.frog.moving:
